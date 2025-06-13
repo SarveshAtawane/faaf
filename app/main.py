@@ -3,7 +3,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from .routes import users, messages
-
+from .core.websocket_manager import manager
+from fastapi import WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -28,3 +29,11 @@ def serve_index():
 # Include your routes
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(messages.router, prefix="/messages", tags=["Messages"])
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: str):
+    await manager.connect(user_id, websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(user_id)
