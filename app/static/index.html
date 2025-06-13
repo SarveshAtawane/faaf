@@ -1385,7 +1385,7 @@ alert('Failed to send message');
 
 function initWebSocket() {
 
-ws = new WebSocket(`ws://localhost:8000/ws/${currentUserId}`);
+ws = new WebSocket(`ws://faaf.onrender.com//ws/${currentUserId}`);
 
 
 ws.onmessage = evt => {
