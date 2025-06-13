@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>WhatsApp-like Chat</title>
+
+<style>
+
+* {
+
+margin: 0;
+
+padding: 0;
+
+box-sizing: border-box;
+
+}
+
+
+
+body {
+
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+background: #111b21;
+
+color: #e9edef;
+
+height: 100vh;
+
+overflow: hidden;
+
+}
+
+
+
+.screen {
+
+height: 100vh;
+
+display: flex;
+
+flex-direction: column;
+
+}
+
+
+
+.hidden {
+
+display: none !important;
+
+}
+
+
+
+/* Auth Screen */
+
+#auth-screen {
+
+justify-content: center;
+
+align-items: center;
+
+background: #0b141a;
+
+}
+
+
+
+.auth-container {
+
+background: #202c33;
+
+padding: 2rem;
+
+border-radius: 8px;
+
+width: 100%;
+
+max-width: 400px;
+
+box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+
+}
+
+
+
+.auth-container h2 {
+
+text-align: center;
+
+margin-bottom: 1.5rem;
+
+color: #00a884;
+
+}
+
+
+
+.tabs {
+
+display: flex;
+
+margin-bottom: 1.5rem;
+
+border-radius: 6px;
+
+overflow: hidden;
+
+}
+
+
+
+.tabs button {
+
+flex: 1;
+
+padding: 0.75rem;
+
+border: none;
+
+background: #2a3942;
+
+color: #aebac1;
+
+cursor: pointer;
+
+transition: all 0.2s;
+
+}
+
+
+
+.tabs button.active {
+
+background: #00a884;
+
+color: white;
+
+}
+
+
+
+.auth-form {
+
+display: flex;
+
+flex-direction: column;
+
+gap: 1rem;
+
+}
+
+
+
+.auth-form input {
+
+padding: 0.75rem;
+
+border: 1px solid #2a3942;
+
+border-radius: 6px;
+
+background: #2a3942;
+
+color: #e9edef;
+
+font-size: 1rem;
+
+}
+
+
+
+.auth-form input:focus {
+
+outline: none;
+
+border-color: #00a884;
+
+}
+
+
+
+.auth-form button {
+
+padding: 0.75rem;
+
+border: none;
+
+border-radius: 6px;
+
+background: #00a884;
+
+color: white;
+
+cursor: pointer;
+
+font-size: 1rem;
+
+font-weight: 500;
+
+transition: background 0.2s;
+
+}
+
+
+
+.auth-form button:hover {
+
+background: #017c5c;
+
+}
+
+
+
+/* Chat Screen */
+
+#chat-screen {
+
+display: flex;
+
+flex-direction: row;
+
+height: 100vh;
+
+}
+
+
+
+/* Sidebar */
+
+.sidebar {
+
+width: 350px;
+
+background: #111b21;
+
+border-right: 1px solid #2a3942;
+
+display: flex;
+
+flex-direction: column;
+
+height: 100vh;
+
+}
+
+
+
+.sidebar-header {
+
+background: #202c33;
+
+padding: 1rem;
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+border-bottom: 1px solid #2a3942;
+
+flex-shrink: 0;
+
+}
+
+
+
+.sidebar-header h3 {
+
+color: #e9edef;
+
+}
+
+
+
+.logout-btn {
+
+background: #d73502;
+
+color: white;
+
+border: none;
+
+padding: 0.5rem 1rem;
+
+border-radius: 4px;
+
+cursor: pointer;
+
+font-size: 0.9rem;
+
+}
+
+
+
+.logout-btn:hover {
+
+background: #b02a02;
+
+}
+
+
+
+.user-list {
+
+flex: 1;
+
+overflow-y: auto;
+
+}
+
+
+
+.user-item {
+
+padding: 1rem;
+
+border-bottom: 1px solid #2a3942;
+
+cursor: pointer;
+
+transition: background 0.2s;
+
+display: flex;
+
+align-items: center;
+
+gap: 1rem;
+
+}
+
+
+
+.user-item:hover {
+
+background: #2a3942;
+
+}
+
+
+
+.user-item.active {
+
+background: #2a3942;
+
+border-right: 3px solid #00a884;
+
+}
+
+
+
+.user-avatar {
+
+width: 40px;
+
+height: 40px;
+
+border-radius: 50%;
+
+background: #00a884;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+font-weight: bold;
+
+color: white;
+
+}
+
+
+
+.user-info {
+
+flex: 1;
+
+}
+
+
+
+.user-name {
+
+font-weight: 500;
+
+margin-bottom: 0.25rem;
+
+}
+
+
+
+.last-message {
+
+font-size: 0.875rem;
+
+color: #8696a0;
+
+}
+
+
+
+.unread-count {
+
+background: #00a884;
+
+color: white;
+
+border-radius: 50%;
+
+width: 20px;
+
+height: 20px;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+font-size: 0.75rem;
+
+font-weight: bold;
+
+}
+
+
+
+/* Chat Area */
+
+.chat-area {
+
+flex: 1;
+
+display: flex;
+
+flex-direction: column;
+
+background: #0b141a;
+
+height: 100vh;
+
+}
+
+
+
+.chat-placeholder {
+
+flex: 1;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+color: #8696a0;
+
+font-size: 1.1rem;
+
+}
+
+
+
+#active-chat {
+
+display: flex;
+
+flex-direction: column;
+
+height: 100vh;
+
+}
+
+
+
+.chat-header {
+
+background: #202c33;
+
+padding: 1rem;
+
+border-bottom: 1px solid #2a3942;
+
+display: flex;
+
+align-items: center;
+
+gap: 1rem;
+
+flex-shrink: 0;
+
+}
+
+
+
+.chat-header .user-avatar {
+
+width: 35px;
+
+height: 35px;
+
+}
+
+
+
+.chat-messages {
+
+flex: 1;
+
+overflow-y: auto;
+
+padding: 1rem;
+
+background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="chat-bg" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.03"/></pattern></defs><rect width="100" height="100" fill="url(%23chat-bg)"/></svg>');
+
+min-height: 0;
+
+}
+
+
+
+.message {
+
+margin-bottom: 0.5rem;
+
+display: flex;
+
+align-items: flex-end;
+
+gap: 0.5rem;
+
+}
+
+
+
+.message-bubble {
+
+max-width: 65%;
+
+padding: 0.5rem 0.75rem;
+
+border-radius: 8px;
+
+position: relative;
+
+word-wrap: break-word;
+
+}
+
+
+
+.message.outgoing {
+
+justify-content: flex-end;
+
+}
+
+
+
+.message.outgoing .message-bubble {
+
+background: #005c4b;
+
+color: #e9edef;
+
+border-bottom-right-radius: 2px;
+
+}
+
+
+
+.message.incoming .message-bubble {
+
+background: #202c33;
+
+color: #e9edef;
+
+border-bottom-left-radius: 2px;
+
+}
+
+
+
+.message-time {
+
+font-size: 0.75rem;
+
+color: #8696a0;
+
+margin-top: 0.25rem;
+
+}
+
+
+
+.message-input-area {
+
+background: #202c33;
+
+padding: 1rem;
+
+display: flex;
+
+align-items: center;
+
+gap: 0.5rem;
+
+flex-shrink: 0;
+
+}
+
+
+
+.message-input {
+
+flex: 1;
+
+padding: 0.75rem 1rem;
+
+border: none;
+
+border-radius: 20px;
+
+background: #2a3942;
+
+color: #e9edef;
+
+font-size: 1rem;
+
+outline: none;
+
+}
+
+
+
+.message-input:focus {
+
+background: #3b4a54;
+
+}
+
+
+
+.send-btn {
+
+width: 40px;
+
+height: 40px;
+
+border: none;
+
+border-radius: 50%;
+
+background: #00a884;
+
+color: white;
+
+cursor: pointer;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+transition: background 0.2s;
+
+}
+
+
+
+.send-btn:hover {
+
+background: #017c5c;
+
+}
+
+
+
+.send-btn:disabled {
+
+background: #8696a0;
+
+cursor: not-allowed;
+
+}
+
+
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+
+width: 6px;
+
+}
+
+
+
+::-webkit-scrollbar-track {
+
+background: #2a3942;
+
+}
+
+
+
+::-webkit-scrollbar-thumb {
+
+background: #8696a0;
+
+border-radius: 3px;
+
+}
+
+
+
+::-webkit-scrollbar-thumb:hover {
+
+background: #aebac1;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- SIGNUP / LOGIN SCREEN -->
+
+<div id="auth-screen" class="screen">
+
+<div class="auth-container">
+
+<h2>Welcome to Chat</h2>
+
+<div class="tabs">
+
+<button id="tab-signup" class="active">Sign Up</button>
+
+<button id="tab-login">Login</button>
+
+</div>
+
+<form id="signup-form" class="auth-form">
+
+<input type="text" id="su-name" placeholder="Full Name" required />
+
+<input type="email" id="su-email" placeholder="Email Address" required />
+
+<input type="password" id="su-password" placeholder="Password (min 6 chars)" required minlength="6" />
+
+<button type="submit">Create Account</button>
+
+</form>
+
+<form id="login-form" class="auth-form hidden">
+
+<input type="email" id="li-email" placeholder="Email Address" required />
+
+<input type="password" id="li-password" placeholder="Password" required />
+
+<button type="submit">Sign In</button>
+
+</form>
+
+</div>
+
+</div>
+
+
+
+<!-- CHAT SCREEN -->
+
+<div id="chat-screen" class="screen hidden">
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+
+<div class="sidebar-header">
+
+<h3>Chats</h3>
+
+<button id="logoutBtn" class="logout-btn">Logout</button>
+
+</div>
+
+<div class="user-list" id="userList">
+
+<!-- Users will be populated here -->
+
+</div>
+
+</div>
+
+
+
+<!-- Chat Area -->
+
+<div class="chat-area">
+
+<div id="chat-placeholder" class="chat-placeholder">
+
+Select a chat to start messaging
+
+</div>
+
+
+<div id="active-chat" class="hidden">
+
+<div class="chat-header" id="chatHeader">
+
+<!-- Chat header will be populated here -->
+
+</div>
+
+<div class="chat-messages" id="chatMessages">
+
+<!-- Messages will be populated here -->
+
+</div>
+
+<div class="message-input-area">
+
+<input type="text" id="messageInput" class="message-input" placeholder="Type a message..." />
+
+<button id="sendBtn" class="send-btn">
+
+<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+
+<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+
+</svg>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+const API_URL = 'http://localhost:8000';
+
+let ws, currentUserId, currentUserEmail, currentUserName;
+
+let activeChat = null;
+
+let chatData = new Map(); // Store chat data for each user
+
+let users = new Map(); // Store user information
+
+
+
+// Tab toggles
+
+document.getElementById('tab-signup').onclick = () => toggleAuth('signup');
+
+document.getElementById('tab-login').onclick = () => toggleAuth('login');
+
+
+
+function toggleAuth(mode) {
+
+document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+
+document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+
+document.getElementById('signup-form').classList.toggle('hidden', mode !== 'signup');
+
+document.getElementById('login-form').classList.toggle('hidden', mode !== 'login');
+
+}
+
+
+
+// SIGNUP
+
+document.getElementById('signup-form').onsubmit = async e => {
+
+e.preventDefault();
+
+const name = document.getElementById('su-name').value;
+
+const email = document.getElementById('su-email').value;
+
+const password = document.getElementById('su-password').value;
+
+
+
+try {
+
+const res = await fetch(`${API_URL}/users/`, {
+
+method: 'POST',
+
+headers: { 'Content-Type': 'application/json' },
+
+body: JSON.stringify({ name, email, password })
+
+});
+
+if (!res.ok) {
+
+const err = await res.json();
+
+return alert(`Signup failed: ${err.detail}`);
+
+}
+
+alert('Account created successfully! Please log in.');
+
+toggleAuth('login');
+
+} catch (error) {
+
+alert('Network error. Please try again.');
+
+}
+
+};
+
+
+
+// LOGIN
+
+document.getElementById('login-form').onsubmit = async e => {
+
+e.preventDefault();
+
+const email = document.getElementById('li-email').value;
+
+const password = document.getElementById('li-password').value;
+
+
+
+try {
+
+const res = await fetch(`${API_URL}/users/login`, {
+
+method: 'POST',
+
+headers: { 'Content-Type': 'application/json' },
+
+body: JSON.stringify({ email, password })
+
+});
+
+if (!res.ok) {
+
+const err = await res.json();
+
+return alert(`Login failed: ${err.detail}`);
+
+}
+
+const user = await res.json();
+
+currentUserId = user.id;
+
+currentUserEmail = user.email;
+
+currentUserName = user.name;
+
+startChat();
+
+} catch (error) {
+
+alert('Network error. Please try again.');
+
+}
+
+};
+
+
+
+// Set up chat after login
+
+async function startChat() {
+
+document.getElementById('auth-screen').classList.add('hidden');
+
+document.getElementById('chat-screen').classList.remove('hidden');
+
+
+
+// Fetch users and populate sidebar
+
+await loadUsers();
+
+
+// Initialize WebSocket
+
+initWebSocket();
+
+
+// Load message history
+
+await loadAllChats();
+
+}
+
+
+
+// Load all users
+
+async function loadUsers() {
+
+try {
+
+const usersRes = await fetch(`${API_URL}/users/`);
+
+const usersList = await usersRes.json();
+
+
+usersList
+
+.filter(u => u.id !== currentUserId)
+
+.forEach(user => {
+
+users.set(user.id, user);
+
+chatData.set(user.id, { messages: [], unreadCount: 0 });
+
+});
+
+
+renderUserList();
+
+} catch (error) {
+
+console.error('Failed to load users:', error);
+
+}
+
+}
+
+
+
+// Render user list in sidebar
+
+function renderUserList() {
+
+const userList = document.getElementById('userList');
+
+userList.innerHTML = '';
+
+
+users.forEach((user, userId) => {
+
+const chat = chatData.get(userId);
+
+const userItem = document.createElement('div');
+
+userItem.className = `user-item ${activeChat === userId ? 'active' : ''}`;
+
+userItem.onclick = () => openChat(userId);
+
+
+const lastMessage = chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
+
+
+userItem.innerHTML = `
+
+<div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+
+<div class="user-info">
+
+<div class="user-name">${user.name}</div>
+
+<div class="last-message">${lastMessage ? lastMessage.message.substring(0, 30) + '...' : 'No messages yet'}</div>
+
+</div>
+
+${chat.unreadCount > 0 ? `<div class="unread-count">${chat.unreadCount}</div>` : ''}
+
+`;
+
+
+userList.appendChild(userItem);
+
+});
+
+}
+
+
+
+// Open chat with specific user
+
+function openChat(userId) {
+
+// Mark previous chat as inactive
+
+const prevActive = document.querySelector('.user-item.active');
+
+if (prevActive) prevActive.classList.remove('active');
+
+
+// Mark current chat as active
+
+const currentItem = document.querySelector(`.user-item[onclick*="${userId}"]`);
+
+if (currentItem) currentItem.classList.add('active');
+
+
+activeChat = userId;
+
+
+// Clear unread count
+
+const chat = chatData.get(userId);
+
+chat.unreadCount = 0;
+
+
+// Show chat area
+
+document.getElementById('chat-placeholder').classList.add('hidden');
+
+document.getElementById('active-chat').classList.remove('hidden');
+
+
+// Update chat header
+
+const user = users.get(userId);
+
+document.getElementById('chatHeader').innerHTML = `
+
+<div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+
+<div class="user-info">
+
+<div class="user-name">${user.name}</div>
+
+<div class="last-message">${user.email}</div>
+
+</div>
+
+`;
+
+
+// Render messages for this chat
+
+renderMessages(userId);
+
+
+// Update sidebar
+
+renderUserList();
+
+}
+
+
+
+// Render messages for active chat
+
+function renderMessages(userId) {
+
+const messagesContainer = document.getElementById('chatMessages');
+
+messagesContainer.innerHTML = '';
+
+
+const chat = chatData.get(userId);
+
+chat.messages.forEach(msg => {
+
+appendMessageToChat(msg, msg.senderId === currentUserId ? 'outgoing' : 'incoming');
+
+});
+
+
+// Scroll to bottom
+
+messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+}
+
+
+
+// Append message to chat
+
+function appendMessageToChat(msg, type) {
+
+const container = document.getElementById('chatMessages');
+
+const messageDiv = document.createElement('div');
+
+messageDiv.className = `message ${type}`;
+
+
+const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+
+messageDiv.innerHTML = `
+
+<div class="message-bubble">
+
+${msg.message}
+
+<div class="message-time">${time}</div>
+
+</div>
+
+`;
+
+
+container.appendChild(messageDiv);
+
+container.scrollTop = container.scrollHeight;
+
+}
+
+
+
+// Load all chat histories
+
+async function loadAllChats() {
+
+try {
+
+const res = await fetch(`${API_URL}/messages/?userId=${currentUserId}`);
+
+const messages = await res.json();
+
+
+messages.forEach(msg => {
+
+const otherUserId = msg.senderId === currentUserId ? msg.receiverId : msg.senderId;
+
+const chat = chatData.get(otherUserId);
+
+if (chat) {
+
+chat.messages.push(msg);
+
+}
+
+});
+
+
+renderUserList();
+
+} catch (error) {
+
+console.error('Failed to load chat history:', error);
+
+}
+
+}
+
+
+
+// LOGOUT
+
+document.getElementById('logoutBtn').onclick = () => {
+
+ws && ws.close();
+
+document.getElementById('chat-screen').classList.add('hidden');
+
+document.getElementById('auth-screen').classList.remove('hidden');
+
+
+// Reset state
+
+activeChat = null;
+
+chatData.clear();
+
+users.clear();
+
+currentUserId = null;
+
+currentUserEmail = null;
+
+currentUserName = null;
+
+};
+
+
+
+// SEND MESSAGE
+
+document.getElementById('sendBtn').onclick = sendMessage;
+
+document.getElementById('messageInput').onkeypress = (e) => {
+
+if (e.key === 'Enter') sendMessage();
+
+};
+
+
+
+async function sendMessage() {
+
+if (!activeChat) return alert('Please select a chat first');
+
+
+const text = document.getElementById('messageInput').value.trim();
+
+if (!text) return;
+
+
+
+const payload = {
+
+senderId: currentUserId,
+
+receiverId: activeChat,
+
+message: text
+
+};
+
+
+try {
+
+const res = await fetch(`${API_URL}/messages/`, {
+
+method: 'POST',
+
+headers: { 'Content-Type': 'application/json' },
+
+body: JSON.stringify(payload)
+
+});
+
+
+if (!res.ok) return alert('Failed to send message');
+
+
+const msg = await res.json();
+
+
+// Add to local chat data
+
+const chat = chatData.get(activeChat);
+
+chat.messages.push(msg);
+
+
+// Update UI
+
+appendMessageToChat(msg, 'outgoing');
+
+renderUserList();
+
+
+// Clear input
+
+document.getElementById('messageInput').value = '';
+
+} catch (error) {
+
+alert('Failed to send message');
+
+}
+
+}
+
+
+
+// WEBSOCKET
+
+function initWebSocket() {
+
+ws = new WebSocket(`ws://localhost:8000/ws/${currentUserId}`);
+
+
+ws.onmessage = evt => {
+
+const msg = JSON.parse(evt.data);
+
+const senderId = msg.senderId;
+
+
+// Add to chat data
+
+const chat = chatData.get(senderId);
+
+if (chat) {
+
+chat.messages.push(msg);
+
+
+// If this chat is not active, increment unread count
+
+if (activeChat !== senderId) {
+
+chat.unreadCount++;
+
+} else {
+
+// If this chat is active, show the message immediately
+
+appendMessageToChat(msg, 'incoming');
+
+}
+
+
+// Update sidebar
+
+renderUserList();
+
+}
+
+};
+
+
+ws.onclose = () => console.log('WebSocket connection closed');
+
+ws.onerror = (error) => console.error('WebSocket error:', error);
+
+}
+
+</script>
+
+</body>
+
+</html>
